@@ -33,7 +33,7 @@ keras.backend.tensorflow_backend.set_session(sess)
 core = #choose between 'GPU'/'CPU'
 memory = #choose between 'dynamically'/'fractions'
 
-sess = gpu_init.CUDA_init(core=core,memory='memory)
+sess = gpu_init.CUDA_init(core=core,memory=memory)
 
 
 #-------------------------------------------------------------> Bahdanau Attention layer
