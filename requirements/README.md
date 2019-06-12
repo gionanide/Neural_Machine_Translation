@@ -9,7 +9,7 @@ install anaconda: https://www.digitalocean.com/community/tutorials/how-to-instal
 
 #create conda envirnment -- conda version: 4.6.12
 
-conda create --name gionanide_env
+conda create --name conda_env
 
 #all requirements
 
