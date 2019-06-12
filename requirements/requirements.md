@@ -11,31 +11,31 @@ conda create --name gionanide_env
 
 #all requirements
 
-conda install -c lukepfister scikits.cuda
+conda install -c lukepfister scikits.cuda==0.5.2
 
-conda install -c anaconda cudatoolkit
+conda install -c anaconda cudatoolkit==10.1.168
 
-conda install -c anaconda numpy
+conda install -c anaconda numpy==1.16.4
 
-conda install -c anaconda pandas
+conda install -c anaconda pandas==0.24.2
 
-conda install -c anaconda scipy
+conda install -c anaconda scipy==1.2.1
 
-conda install -c conda-forge scikit-surprise
+conda install -c conda-forge scikit-surprise==1.0.6
 
-conda install -c anaconda gensim
+conda install -c anaconda gensim==3.4.0
 
-conda install -c anaconda nltk
+conda install -c anaconda nltk==3.4.1
 
-conda install -c anaconda scikit-learn
+conda install -c anaconda scikit-learn==0.21.2
 
-conda install -c conda-forge matplotlib
+conda install -c conda-forge matplotlib==3.1.0
 
-conda install bokeh
+conda install bokeh==1.2.0
 
-conda install -c anaconda tensorflow-gpu
+conda install -c anaconda tensorflow-gpu==1.13.1
 
-conda install -c anaconda keras-gpu
+conda install -c anaconda keras-gpu==2.2.4
 
-conda install -c anaconda pydot
+conda install -c anaconda pydot==1.4.1
 ```
