@@ -3,7 +3,7 @@ Python scripts shared folder to initialize some global properties.
 
 ```python
 
-
+import sys
 #if you want to import from a file in a specific directory
 sys.path.insert(0, '/media/data/gionanide/shared_python_scripts')
 
