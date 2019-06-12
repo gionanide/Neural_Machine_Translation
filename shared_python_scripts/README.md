@@ -30,8 +30,8 @@ sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 keras.backend.tensorflow_backend.set_session(sess)
 
 #and call the function as follows
-core = choose between 'GPU'/'CPU'
-memory = choose between 'dynamically'/'fractions'
+core = #choose between 'GPU'/'CPU'
+memory = #choose between 'dynamically'/'fractions'
 
 sess = gpu_init.CUDA_init(core=core,memory='memory)
 
