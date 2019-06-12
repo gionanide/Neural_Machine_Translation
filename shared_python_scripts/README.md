@@ -9,6 +9,9 @@ sys.path.insert(0, '/media/data/gionanide/shared_python_scripts')
 
 
 #-------------------------------------------------------------> Tensorflow Session properties
+
+import gpu_initializations as gpu_init
+
 #default tensorflow session allocates all the available memory
 
 # Allocates memory dynamically, as much as you need
