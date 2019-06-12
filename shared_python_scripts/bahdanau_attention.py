@@ -83,6 +83,9 @@ class BahdanauAttention(keras.Model):
 
 
 '''
+#-------------------------------------------------------> Testing layer
+
+
 #sess = gpu_init.CUDA_init('GPU','dynamically')        
                 
 
