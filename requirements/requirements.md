@@ -1,11 +1,14 @@
 
 Ubuntu 18.04.2 LTS
 
-install anaconda https://www.digitalocean.com/community/tutorials/how-to-install-anaconda-on-ubuntu-18-04-quickstart
+install python: sudo apt-get install python3.6
+
+install anaconda: https://www.digitalocean.com/community/tutorials/how-to-install-anaconda-on-ubuntu-18-04-quickstart
+
 
 ```bash
 
-#create conda envirnment
+#create conda envirnment -- conda version: 4.6.12
 
 conda create --name gionanide_env
 
