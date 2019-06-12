@@ -8,7 +8,7 @@ Python scripts shared folder to initialize some global properties.
 sys.path.insert(0, '/media/data/gionanide/shared_python_scripts')
 
 
-#-----------------------------------------------------------------------------> Tensorflow Session properties
+#-------------------------------------------------------------> Tensorflow Session properties
 #default tensorflow session allocates all the available memory
 
 # Allocates memory dynamically, as much as you need
@@ -29,8 +29,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]=""
 sess = tf.Session(config=tf.ConfigProto(gpu_options=gpu_options))
 keras.backend.tensorflow_backend.set_session(sess)
 
-
-#-----------------------------------------------------------------------------> Bahdanau Attention layer
+#-------------------------------------------------------------> Bahdanau Attention layer
 
 #use the layer as follows
 
