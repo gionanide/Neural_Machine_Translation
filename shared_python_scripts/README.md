@@ -41,6 +41,8 @@ import bahdanau_attention as bahdanau_attention
  
 bahdanau_attention.BahdanauAttention(n_units, name='bahdanau_attention_layer')
 
+context_vector, attention_weights = bahdanau_attention_layer([hidden_state, hidden_sequence])
+
 #output 
 #context vector: (batch_size, features_per_timestep)
 #attention weights: (batch_size, timesteps, 1)
