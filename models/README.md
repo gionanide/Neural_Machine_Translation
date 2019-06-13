@@ -17,8 +17,8 @@ nmt_lstm_layer_1 (LSTM)      (None, 6, 256)            525312
 _________________________________________________________________
 nmt_time_distributed (TimeDi (None, 6, 4681)           1203017   
 =================================================================
-Total params: 4,158,025
-Trainable params: 4,158,025
+Total params: 4.158.025
+Trainable params: 4.158.025
 Non-trainable params: 0
 
 ```
