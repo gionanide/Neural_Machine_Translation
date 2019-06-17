@@ -27,7 +27,7 @@ gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=0.333)
 #choose which GPU  to use
 os.environ["CUDA_VISIBLE_DEVICES"]="0"
         
-#user CPU
+#use CPU
 os.environ["CUDA_VISIBLE_DEVICES"]=""
 
 
