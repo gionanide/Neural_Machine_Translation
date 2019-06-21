@@ -20,3 +20,11 @@ context_vector, attention_weights = bahdanau_attention_layer([hidden_state, hidd
 #context vector: (batch_size, features_per_timestep)
 #attention weights: (batch_size, timesteps, 1)
 ```
+
+## Compile and Train the model
+
+```python
+
+model = evaluate_model.compile_train_seq2seq(model, encoder_inputs_train, decoder_inputs_train, target_outputs_train, encoder_inputs_test, decoder_inputs_test, target_outputs_test)
+
+```
