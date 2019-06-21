@@ -2,10 +2,6 @@
 import keras
 import sys
 import tensorflow as tf
-
-#insert the path to shared file first and then import the scripts
-sys.path.insert(0, '/media/data/gionanide/shared_python_scripts')
-
 import bahdanau_attention as bahdanau_attention
 import gpu_initializations as gpu_init
 
