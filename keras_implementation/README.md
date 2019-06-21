@@ -1,3 +1,7 @@
+## Bahdanau attention
+
+
+```python
 #-------------------------------------------------------------> Bahdanau Attention layer
 
 #use the layer as follows
@@ -15,3 +19,4 @@ context_vector, attention_weights = bahdanau_attention_layer([hidden_state, hidd
 #output 
 #context vector: (batch_size, features_per_timestep)
 #attention weights: (batch_size, timesteps, 1)
+```
