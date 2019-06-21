@@ -28,3 +28,11 @@ context_vector, attention_weights = bahdanau_attention_layer([hidden_state, hidd
 model = evaluate_model.compile_train_seq2seq(model, encoder_inputs_train, decoder_inputs_train, target_outputs_train, encoder_inputs_test, decoder_inputs_test, target_outputs_test)
 
 ```
+
+## Evaluate the model
+
+```python
+
+evaluate_model.model_speech_evaluation(trained_model, output_tokenizer, encoder_inputs_test, test, role='Test')
+
+```
