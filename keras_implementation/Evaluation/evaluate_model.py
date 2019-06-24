@@ -16,23 +16,9 @@ import statistics
 make a distinct function in order to compile and train the model
 
 '''
-def compile_train(model, train_english_input, train_german_output, test_english_input, test_german_output):
+def compile_train(model, encoder_input_train, target_output_train, encoder_input_test, target_output_test, loss, epochs, learning_rate, batch_size, decay):
 
 
-        #define loss function
-        loss = 'categorical_crossentropy'
-        
-        #time to see the whole dataset during training
-        epochs = 30
-        
-        #learning_rate
-        learning_rate = 0.001
-        
-        #decay, decreasing of learning rate through time
-        #decay = learning_rate/epochs
-        
-        #sampes to split the dataset for one epoch
-        batch_size = 64
 
         #define optimizer
         optimizer = keras.optimizers.Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0, amsgrad=False)
@@ -41,7 +27,33 @@ def compile_train(model, train_english_input, train_german_output, test_english_
         model.compile(optimizer=optimizer, loss=loss)   
         
         #start training procedure
-        history = model.fit(train_english_input, train_german_output, epochs=epochs, batch_size=batch_size, validation_data=(test_english_input, test_german_output), verbose=1)   
+        history = model.fit(encoder_input_train, target_output_train, epochs=epochs, batch_size=batch_size, validation_data=(encoder_input_test, target_output_test), verbose=1)   
+        
+        
+        #visualize the results
+        plt.plot(history.history['loss'])
+        plt.plot(history.history['val_loss'])
+        plt.title('Model training procedure')
+        plt.ylabel('Loss')
+        plt.xlabel('Epoch')
+        plt.legend(['Train', 'Test'], loc='upper right')
+        plt.show()   
+        
+        return model 
+        
+        
+        
+def compile_train_teacher_forcing(model, encoder_input_train, decoder_input_train, target_output_train, encoder_input_test, decoder_input_test, target_output_test, loss, epochs, learning_rate, batch_size, decay):
+
+
+        #define optimizer
+        optimizer = keras.optimizers.Adam(lr=learning_rate, beta_1=0.9, beta_2=0.999, epsilon=None, decay=0, amsgrad=False)
+
+        #compile the model based on the previous defined properties
+        model.compile(optimizer=optimizer, loss=loss)   
+        
+        #start training procedure
+        history = model.fit([encoder_input_train,decoder_input_train], target_output_train, epochs=epochs, batch_size=batch_size, validation_data=([encoder_input_test,decoder_input_test], target_output_test), verbose=1)   
         
         
         #visualize the results
@@ -53,7 +65,7 @@ def compile_train(model, train_english_input, train_german_output, test_english_
         plt.legend(['Train', 'Test'], loc='upper right')
         plt.show()   
         
-        return model 
+        return model
    
    
    
@@ -145,7 +157,7 @@ def model_speech_evaluation(model, tokenizer, input_sequences, dataset, role):
                 
                 speech_target, speech_input = dataset[index]
                 
-                if (index<10):
+                if (index<2):
                 
                 
                         print('---------------------- New sample ----------------------')
@@ -168,7 +180,60 @@ def model_speech_evaluation(model, tokenizer, input_sequences, dataset, role):
         mean_bleu_metrics = statistics.mean(bleu_metrics)
         print('Mean BLEU metrics in',role,':',mean_bleu_metrics)
         #print('BlUE-1:',BLUE_metric(target_sequence_speech, predicted_target_sequence_speech)) 
-     
+        
+        
+        
+        
+        
+        
+        
+        
+        
+#make this function in order to evaluate the model in speech generation based on metrics like BLUE, ROGUE etc
+def model_speech_evaluation_teacher_forcing(model, tokenizer, input_sequences, dataset, role):
+
+
+        bleu_metrics = []
+        target_sequence_speech = []
+        predicted_target_sequence_speech = []
+        
+        print('\n')
+        print(role)
+        
+        #iterate all the input sequences, which are input to the model
+        for index in range(input_sequences[0].shape[0]):
+        
+                #make the appropriatte format
+                input_sequence = [input_sequences[0][index].reshape((1, input_sequences[0][index].shape[0])), input_sequences[1][index].reshape((1, input_sequences[1][index].shape[0]))]
+                
+                #generate translation
+                translation = generate_predicted_sequece(model, tokenizer, input_sequence)
+                
+                speech_target, speech_input = dataset[index]
+                
+                if (index<2):
+                
+                
+                        print('---------------------- New sample ----------------------')
+                        print('input ----------> ',speech_input)
+                        print('target ----------> ',speech_target)
+                        print('predicted ---------->',translation)
+                        print('BLEU score ---------->',BLUE_metric(speech_target, translation))
+                        print('\n')
+                        
+                bleu_metrics.append(BLUE_metric(speech_target, translation))
+                        
+                
+                #append the results to the list to keep a record
+                target_sequence_speech.append(speech_target.split())
+                
+                
+                predicted_target_sequence_speech.append(translation.split())
+                
+                
+        mean_bleu_metrics = statistics.mean(bleu_metrics)
+        print('Mean BLEU metrics in',role,':',mean_bleu_metrics)
+        #print('BlUE-1:',BLUE_metric(target_sequence_speech, predicted_target_sequence_speech))
      
      
      
