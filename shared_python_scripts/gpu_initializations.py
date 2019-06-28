@@ -9,7 +9,7 @@ import keras
 call this function to initialize the following properties
 
 '''  
-def CUDA_init(core,memory):
+def CUDA_init(core,memory,parallel):
 
         print('\n ----------------- Start initalizing CUDA properties ----------------- \n')
 
@@ -33,6 +33,15 @@ def CUDA_init(core,memory):
                 os.environ["CUDA_VISIBLE_DEVICES"]=""
                 
                 print('\n ----------------- Using CPU ----------------- \n')
+                
+                
+        elif(parallel):
+        
+                #running the example on multiple gpus
+                os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
+                
+                print('\n ----------------- Using multiple GPUs ----------------- \n')
+                
         
         
         #use exactly the GPU percentage you actally need, because keras default procedure allocates all memory
