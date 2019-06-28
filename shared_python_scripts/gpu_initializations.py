@@ -21,11 +21,22 @@ def CUDA_init(core,memory,parallel):
         
         if(core == "GPU"):
         
-                #define which GPU to use, the number is the ID of the GPU given from your system (bus ID)
-                os.environ["CUDA_VISIBLE_DEVICES"]="0"
+        
+                if(parallel):
+        
+                        #running the example on multiple gpus
+                        os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
+                        
+                        print('\n ----------------- Using multiple GPUs ----------------- \n')
+                        
+                else:
+        
+                        #define which GPU to use, the number is the ID of the GPU given from your system (bus ID)
+                        os.environ["CUDA_VISIBLE_DEVICES"]="0"
                 
                 
-                print('\n ----------------- Using GPU ----------------- \n')
+                        print('\n ----------------- Using GPU ----------------- \n')
+                        
         
         elif(core == "CPU"):
         
@@ -33,14 +44,6 @@ def CUDA_init(core,memory,parallel):
                 os.environ["CUDA_VISIBLE_DEVICES"]=""
                 
                 print('\n ----------------- Using CPU ----------------- \n')
-                
-                
-        elif(parallel):
-        
-                #running the example on multiple gpus
-                os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
-                
-                print('\n ----------------- Using multiple GPUs ----------------- \n')
                 
         
         
