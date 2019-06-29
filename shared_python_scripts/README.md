@@ -29,7 +29,10 @@ sess = gpu_init.CUDA_init(core=core,memory=memory,parallel=parallel)
 
 ```python
 
-# inputs: hidden_sequence from an LSTM (return_sequence true), and one input a state to calculate hidden_state_h
+#input1: hidden_sequence from an LSTM (return_sequence true)
+#input2: one input, a state hidden_state_h (e.g. from encoder's input)
+
+
 #output1: context vector, given attention to every slice of hidden_sequence
 #output2: attention weights, every weight corresponding to every slice of the sequece
 
