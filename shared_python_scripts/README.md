@@ -1,9 +1,6 @@
 Python scripts shared folder to initialize some global properties.
 
 ## Cuda properties
-## Bahdanau attention
-
-
 ```python
 
 import sys
