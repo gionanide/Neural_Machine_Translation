@@ -26,17 +26,8 @@ class Decoder(torch.nn.Module):
                 
                 
                 self.dropout = torch.nn.Dropout(self.dropout_precent)
-                
-                #-----------------------------------------------------------------> Attention
-                #make two dense layers because need a weighted sum
-                self.W_1 = torch.nn.Linear(hidden_units, hidden_units)
-                self.W_2 = torch.nn.Linear(hidden_units, hidden_units)      
-                
-                #define the output 
-                self.V = torch.nn.Linear(hidden_units, 1)
-                #-----------------------------------------------------------------> Attention
 
-
+                
                 self.lstm = torch.nn.LSTM(hidden_units, hidden_units)
                 
                 
@@ -66,31 +57,6 @@ class Decoder(torch.nn.Module):
                 #----------------------------------------------> Relu activation
                 output = self.dropout(embedded)
                 #print('relu:',output.size())
-                
-                
-                
-                #-------------------------------------------------------------------------------------------------------------------------------> Attention
-                #find the score for every hidden state, shape ----> (batch_size, max_length, hidden_size)
-                #in our case the batch_size is the reviews so we assign weight to every review
-                score = self.V(torch.tanh(self.W_1(output) + self.W_2(encoder_output_sequence)))                
-                #print('Scores:',score.shape)
-                
-                
-                #attention weights shape ----> (batch_size, max_length, 1), we conclude with 1 because we got the score back
-                #-----> axis=0, iterate along the rows
-                #-----> axis=1, iterate along the columns
-                attention_weights = torch.softmax(score, dim=0)
-                #print('Attention weights:',attention_weights.shape)
-                
-                #take the context vector
-                context_vector = attention_weights * encoder_output_sequence
-                #print('Context vector:',context_vector.shape)
-                
-                
-                #one weight for every hidden state, output ----> (batch_size, hidden_size)
-                context_vector = torch.sum(context_vector, dim=0).unsqueeze(0)
-                #-------------------------------------------------------------------------------------------------------------------------------> Attention
-
 
                 #-----------------------------------------------------------> LSTM 
                 output, hidden = self.lstm(context_vector, hidden_states)
@@ -105,11 +71,11 @@ class Decoder(torch.nn.Module):
                 return output, hidden, attention_weights
 
 
+        #in case of weights initialization
+        def initHidden(self):
 
-        #def initHidden(self):
 
-
-         #       return torch.zeros(1, 1, self.hidden_units, device=device)
+               return torch.zeros(1, 1, self.hidden_units, device=device)
                 
        
        
