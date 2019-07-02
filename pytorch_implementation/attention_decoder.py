@@ -105,11 +105,11 @@ class Decoder(torch.nn.Module):
                 return output, hidden, attention_weights
 
 
+        #in case of the initialization of the weights
+        def initHidden(self):
 
-        #def initHidden(self):
 
-
-         #       return torch.zeros(1, 1, self.hidden_units, device=device)
+               return torch.zeros(1, 1, self.hidden_units, device=device)
                 
        
        
