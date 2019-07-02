@@ -19,7 +19,7 @@ class Encoder(torch.nn.Module):
                 self.embedding = torch.nn.Embedding(input_size, embedding_dim)
                 
                 #-----------------> LSTM bidirectional to summarize future and past words
-                self.lstm_bid = torch.nn.LSTM(embedding_dim, hidden_units, bidirectional=False)
+                self.lstm_bid = torch.nn.LSTM(embedding_dim, hidden_units, bidirectional=True)
                 
                 #-----------------> Summarization LSTM to catch the meaning of the sentence
                 self.lstm_sum = torch.nn.LSTM(hidden_units*2, hidden_units)
@@ -48,33 +48,33 @@ class Encoder(torch.nn.Module):
                 
                 hidden_bid_c = hidden_bid_states[1]
                 
-                #print('lstm bid:',output_bid.size())
+                print('lstm bid:',output_bid.size())
                 #output: (sentence length, batch size, hid_dim * {bibirectional})
                 
-                #print('lstm bib h:',hidden_bid_h.size())
+                print('lstm bib h:',hidden_bid_h.size())
                 #(layers, batch size, hid dim)
                               
-                #print('lstm bid c:',hidden_bid_c.size())
+                #rint('lstm bid c:',hidden_bid_c.size())
                 #(layers, batch size, hid dim)                
                 
                 #--------------------------------------------------------------------------> LSTM summarization
-                #output_sum, hidden_sum_states = self.lstm_sum(output_bid)
+                output_sum, hidden_sum_states = self.lstm_sum(output_bid)
                 
-                #hidden_sum_h = hidden_sum_states[0]
+                hidden_sum_h = hidden_sum_states[0]
                 
-                #hidden_sum_c = hidden_sum_states[1]
+                hidden_sum_c = hidden_sum_states[1]
                 
-                #print('lstm sum:',output_sum.size())
+                print('lstm sum:',output_sum.size())
                 #(sentence length, batch size, hid_dim * {bibirectional})
                 
-                #print('lstm sum h:',hidden_sum_h.size())
+                print('lstm sum h:',hidden_sum_h.size())
                 #(layers, batch size, hid dim)
                               
-                #print('lstm sum c:',hidden_sum_c.size())
+                print('lstm sum c:',hidden_sum_c.size())
                 #(layers, batch size, hid dim)
                 
                 
-                return output_bid, hidden_bid_h, hidden_bid_c
+                return output_sum, hidden_sum_h, hidden_sum_c
                 
                 
                 
