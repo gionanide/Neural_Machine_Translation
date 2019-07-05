@@ -9,6 +9,10 @@ make a distinct function in order to compile and train the model
 '''
 def compile_train(model, encoder_input_train, target_output_train, encoder_input_test, target_output_test, loss, epochs, learning_rate, batch_size, dropout_lstm_encoder, dropout_lstm_decoder, dropout_layer, decay):     
 def compile_train_teacher_forcing(model, encoder_input_train, decoder_input_train, target_output_train, encoder_input_test, decoder_input_test, target_output_test, loss, epochs, learning_rate, batch_size, dropout_lstm_encoder, dropout_lstm_decoder, dropout_layer, decay): 
+
+
+
+
 '''
 
 this functions makes a mapping from index to work
