@@ -1,4 +1,4 @@
-## ---------------------------------------------- baseline model ----------------------------------------------
+## -------------------- baseline model --------------------
 
 ![alt text](https://github.com/gionanide/Neural_Machine_Translation/blob/master/keras_implementation/models/baseline_model.png)
 ```python
@@ -25,7 +25,7 @@ Non-trainable params: 0
 ```
 
 
-## ---------------------------------------------- teacher forcing ----------------------------------------------
+## -------------------- teacher forcing --------------------
 
 ![alt text](https://github.com/gionanide/Neural_Machine_Translation/blob/master/keras_implementation/models/teacher_forcing.png)
 ```python
