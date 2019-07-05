@@ -213,7 +213,13 @@ index{eos:2}
 
 '''
 #remove Start Of Sequence symbol 
-def removeSOS(array,set_size):       
+def removeSOS(array,set_size): 
+
+
+
+
+
+
 '''
         
 ------ input ------
