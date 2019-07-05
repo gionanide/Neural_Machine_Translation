@@ -1,19 +1,20 @@
 #!usr/bin/python
-#import tensorflow as tf
-import re
-import string
-from unicodedata import normalize
 import numpy as np
 import keras
-import sys
 import matplotlib.pyplot as plt
-import nltk
 import preprocessing as preprocessing
-import baseline_model as baseline_model
-import model1 as model1
-import evaluate_model as evaluate_model
-
-
+import sys
+from models import teacher_forcing_model
+from models import baseline_model
+import evaluation
+import numpy as np
+from models import seq2seq_attention
+#insert the path to shared file first and then import the scripts
+sys.path.insert(0, 'path/shared_python_scripts')
+import gpu_initializations as gpu_init
+  
+     
+np.random.seed(7)
      
         
 '''
@@ -23,173 +24,154 @@ our model is a small model, the complexity can be increased using a larger numbe
 '''             
 if __name__ == '__main__':
 
+
+        #define if you want to run it in GPU or CPU
+        core = 'GPU'
+        
+        #define if you want dynamically memory allocation or a fixed size
+        memory = 'dynamically'
+        
+        #define if you want to run in on multiple GPUs
+        parallel = False
+        
+        #initialize some properties
+        gpu_init.CUDA_init(core=core,memory=memory,parallel=parallel)
+
+
+        #define the path of where to read the file
         path = 'deu.txt'
         
-        text = preprocessing.readFile(path)
+        #define the dataset length, maximum = 192881
+        dataset_length = 100
         
-        pairs = preprocessing.makePairs(text)
+        #define the percentage of training data
+        train_per_cent = 0.9
         
-        cleaned_words = preprocessing.cleaning(pairs)
+        '''        
+        translation flow
         
-        #visualize(cleaned_words)
-        #print(cleaned_words.shape) --> (192881, 2) 0 -english || 1 -german
+        1) english -- > german : flow = 'etg'
+        
+        2) german -- > english : flow = 'gte'
+        
+        3) enlglish/german -- > german/english : flow = 'egtge'
+        '''
+        flow = 'gte'
         
         
-        cleaned_words = cleaned_words[:30000, :]
+        #------------------------------> simple model
+        encoder_input_train, target_output_train, encoder_input_test, target_output_test, input_vocabulary_size, input_tokenizer, input_max_sentence_length, output_vocabulary_size, output_tokenizer, output_max_sentence_length, train, test = preprocessing.format_data(path, dataset_length, train_per_cent, flow)
         
-        np.random.shuffle(cleaned_words)
+        
+        #------------------------------> teacher forcing
+        #encoder_input_train, decoder_input_train, target_output_train, encoder_input_test, decoder_input_test, target_output_test, input_vocabulary_size, input_tokenizer, input_max_sentence_length, output_vocabulary_size, output_tokenizer, output_max_sentence_length, train, test = preprocessing.teacher_forcing_format(path, dataset_length, train_per_cent, flow)
+        
+        
+        #------------------------------> seq2seq attention
+        #encoder_input_train, decoder_input_train, target_output_train, encoder_input_test, decoder_input_test, target_output_test, input_vocabulary_size, input_tokenizer, input_max_sentence_length, output_vocabulary_size, output_tokenizer, output_max_sentence_length, train, test = preprocessing.seq2seq_attention_format(path, dataset_length, train_per_cent, flow)
 
+        
+
+
+        
+        #-----------------------------------------------------------> Set
+        print('\n ----------------- Feeding sets ----------------- \n')
+        print('\n ---------- Encoder ----------')
+        print('Encoder inputs train shape:',encoder_input_train.shape)
+        print('Encoder inputs test shape:',encoder_input_test.shape)
+        print('Input max sentence length:',input_max_sentence_length)
+        print('Input vocabulary size:',input_vocabulary_size)
+        print('\n ---------- Decoder ----------')
+        print('Decoder outputs train shape:',target_output_train.shape)
+        print('Decoder outputs test shape:',target_output_test.shape)
+        print('Output max sentence length:',output_max_sentence_length)
+        print('Ouput vocabulary size:',output_vocabulary_size)
+        print('\n')
+        
+
+        #initialize the model
+        
+        #hidden units
+        hidden_units = 512
+        
+        #define the embedding dimension of the embedding layer
+        embedding_dimension = 512
+        
+        #define the dropout rate
+        dropout_layer = 0.4
+        
+        #dropout rate in encoder summarization lstm
+        dropout_lstm_encoder = 0.2
+        
+        #dropout rate in decoder lstm
+        dropout_lstm_decoder = 0.2
+        
+        
+        #-----------------------------------------------------------------------------------------> Define the model
+        
+        #---------------------------> baseline model
+        nmt_model = baseline_model.NMT(input_vocabulary_size, output_vocabulary_size, input_max_sentence_length, output_max_sentence_length, hidden_units, embedding_dimension)
+        
+        #---------------------------> teacher forcing model
+        #nmt_model = teacher_forcing_model.NMT(input_vocabulary_size, output_vocabulary_size, input_max_sentence_length, output_max_sentence_length, hidden_units, embedding_dimension, dropout_lstm_encoder, dropout_lstm_decoder, dropout_layer)
+        
+        #-----------------------------------> using attention
+        #nmt_model = seq2seq_attention.NMT(input_vocabulary_size, output_vocabulary_size, input_max_sentence_length, output_max_sentence_length, hidden_units, embedding_dimension, dropout_lstm_encoder, dropout_lstm_decoder, dropout_layer)
+        
+        
+        #check if you chose to train your model on multiple GPUs, default 2 GPUs
+        if (parallel):
+        
+                #pass the model so as to use parallelism with multiple GPUs
+                nmt_model = keras.utils.multi_gpu_model(nmt_model, gpus=[0, 1])
+        
+        
+        
+        #-----------------------------------------------------------------------------------------> Train the model
+        
+        #define loss function
+        loss = 'categorical_crossentropy'
+        
+        #time to see the whole dataset during training
+        epochs = 100
+        
+        #learning_rate
+        learning_rate = 0.001
+        
+        #decay, decreasing of learning rate through time
+        decay = 0
+        
+        #sampes to split the dataset for one epoch
+        batch_size = 256
+        
+        #simple model
+        trained_model = evaluation.compile_train(nmt_model, encoder_input_train, target_output_train, encoder_input_test, target_output_test, loss, epochs, learning_rate, batch_size, dropout_lstm_encoder, dropout_lstm_decoder, dropout_layer, decay)
+        
+        #teacher forcing
+        #trained_model = evaluation.compile_train_teacher_forcing(nmt_model, encoder_input_train, decoder_input_train, target_output_train, encoder_input_test, decoder_input_test, target_output_test, loss, epochs, learning_rate, batch_size, dropout_lstm_encoder, dropout_lstm_decoder, dropout_layer, decay)
+        
  
-        #english preprocessing
-        english_tokenizer = preprocessing.tokenizer(cleaned_words[:,0])
-        english_vocabulary_size = len(english_tokenizer.word_index) + 1
-        english_max_sentence_length, english_max_sentence = preprocessing.max_sentence_length(cleaned_words[:,0])
         
         
-        #print(english_tokenizer.word_index)
+        #-----------------------------------------------------------------------------------------> Evaluate model
         
-        print('\n ----------------- Insights ----------------- \n')
-        print('English vocabulary size:',english_vocabulary_size)
-        print('English max length sentence:',english_max_sentence_length)
-        print('English max sentence:',english_max_sentence)
+        #baseline model
+        evaluation.model_speech_evaluation(trained_model, output_tokenizer, encoder_input_train, train, role='Train')
+        evaluation.model_speech_evaluation(trained_model, output_tokenizer, encoder_input_test, test, role='Test')
         
-        
-        #german preprocessing
-        german_tokenizer = preprocessing.tokenizer(cleaned_words[:,1])
-        german_vocabulary_size = len(german_tokenizer.word_index) + 1
-        german_max_sentence_length, german_max_sentence = preprocessing.max_sentence_length(cleaned_words[:,1])
-        
-        print('German vocabulary size:',german_vocabulary_size)
-        print('German max length sentence:',german_max_sentence_length)
-        print('German max sentence:',german_max_sentence)
-              
-        
-        
-        #split test and train data
-        train = cleaned_words[:28000]
-        test = cleaned_words[28000:]
-        
-        print('Train size:',len(train)) # -- 173.529
-        print('Test size:',len(test)) # -- 19289
-        
-        '''
-        #--------------------------------------------------------------------------------------------------------------------------------> ENGLISH TO GERMAN
-        #prepare train data
-        train_english_input = preprocessing.encode_sequences(english_tokenizer, train[:, 0])
-        #print(train_english_input)
-        
-        train_english_input = preprocessing.pad_sequences(english_max_sentence_length, train_english_input) 
-        #print(train_english_input)
-        
-        train_german_output = preprocessing.encode_sequences(german_tokenizer, train[:, 1])
-        train_german_output = preprocessing.pad_sequences(german_max_sentence_length, train_german_output)
-        
-        #make the target as an one hot encoding
-        train_german_output = preprocessing.oneHotEncoding(train_german_output, german_vocabulary_size)
-        
-        #and one for english
-        #train_english_output = oneHotEncoding(train_english_input, english_vocabulary_size)
-                
-        #print(train_german_output)
-        #print(train_german_output[0].shape)
-        #print(train_german_output[0][0].shape)    
-        
-        
-        #prepare test data
-        test_english_input = preprocessing.encode_sequences(english_tokenizer, test[:, 0])
-        test_english_input = preprocessing.pad_sequences(english_max_sentence_length, test_english_input)
-        
-        test_german_output = preprocessing.encode_sequences(german_tokenizer, test[:, 1])
-        test_german_output = preprocessing.pad_sequences(german_max_sentence_length, test_german_output)
-        
-        #make the target as an one hot encoding
-        test_german_output = preprocessing.oneHotEncoding(test_german_output, german_vocabulary_size)
-        
-        #and one for the english output
-        #test_english_output = oneHotEncoding(test_english_input, english_vocabulary_size)
-        
-        #-----------------------------------------------------------> Set
-        print('\n ----------------- Feeding sets ----------------- \n')
-        print('Input train shape:',train_english_input.shape)
-        print('Output train shape:',train_german_output.shape)
-        print('Input test shape:',test_english_input.shape)
-        print('Output test shape:',test_german_output.shape)
-        
-        
-        
-         #initialize the model
-        #nmt_model = baseline_model.NMT(english_vocabulary_size, german_vocabulary_size, english_max_sentence_length, german_max_sentence_length, 256)
-        nmt_model = model1.NMT(english_vocabulary_size, german_vocabulary_size, english_max_sentence_length, german_max_sentence_length, 256)
-        
-        #train the model
-        trained_model = evaluate_model.compile_train(nmt_model, train_english_input, train_german_output, test_english_input, test_german_output)
-        
-        
-        #evaluate model
-        evaluate_model.model_speech_evaluation(trained_model, german_tokenizer, train_english_input, train, role='Train')
-        
-        evaluate_model.model_speech_evaluation(trained_model, german_tokenizer, test_english_input, test, role='Test')
-        '''
+        #teacher forcing
+        #evaluation.model_speech_evaluation_teacher_forcing(trained_model, output_tokenizer, [encoder_input_train, decoder_input_train], train, role='Train')
+        #evaluation.model_speech_evaluation_teacher_forcing(trained_model, output_tokenizer, [encoder_input_test, decoder_input_test], test, role='Test')
         
         
         
         
-        #------------------------------------------------------------------------------------------------------------------------------------> GERMAN TO ENGLISH
-        #prepare train data
-        train_english_output = preprocessing.encode_sequences(english_tokenizer, train[:, 0])
-        #print(train_english_input)
-        
-        train_english_output = preprocessing.pad_sequences(english_max_sentence_length, train_english_output) 
-        #print(train_english_input)
-        
-        train_german_input = preprocessing.encode_sequences(german_tokenizer, train[:, 1])
-        train_german_input = preprocessing.pad_sequences(german_max_sentence_length, train_german_input)
-        
-        #make the target as an one hot encoding
-        train_english_output = preprocessing.oneHotEncoding(train_english_output, english_vocabulary_size)
-        
-        #and one for english
-        #train_english_output = oneHotEncoding(train_english_input, english_vocabulary_size)
-                
-        #print(train_german_output)
-        #print(train_german_output[0].shape)
-        #print(train_german_output[0][0].shape)    
-        
-        
-        #prepare test data
-        test_english_output = preprocessing.encode_sequences(english_tokenizer, test[:, 0])
-        test_english_output = preprocessing.pad_sequences(english_max_sentence_length, test_english_output)
-        
-        test_german_input = preprocessing.encode_sequences(german_tokenizer, test[:, 1])
-        test_german_input = preprocessing.pad_sequences(german_max_sentence_length, test_german_input)
-        
-        #make the target as an one hot encoding
-        test_english_output = preprocessing.oneHotEncoding(test_english_output, english_vocabulary_size)
-        
-        #and one for the english output
-        #test_english_output = oneHotEncoding(test_english_input, english_vocabulary_size)
-        
-        #-----------------------------------------------------------> Set
-        print('\n ----------------- Feeding sets ----------------- \n')
-        print('Input train shape:',train_german_input.shape)
-        print('Output train shape:',train_english_output.shape)
-        print('Input test shape:',test_german_input.shape)
-        print('Output test shape:',test_english_output.shape)
         
         
         
-         #initialize the model
-        #nmt_model = baseline_model.NMT(german_vocabulary_size, english_vocabulary_size, german_max_sentence_length, english_max_sentence_length, 256)
-        nmt_model = model1.NMT(german_vocabulary_size, english_vocabulary_size, german_max_sentence_length, english_max_sentence_length, 256)
-        
-        #train the model
-        trained_model = evaluate_model.compile_train(nmt_model, train_german_input, train_english_output, test_german_input, test_english_output)
         
         
-        #evaluate model
-        evaluate_model.model_speech_evaluation(trained_model, english_tokenizer, train_german_input, train, role='Train')
         
-        evaluate_model.model_speech_evaluation(trained_model, english_tokenizer, test_german_input, test, role='Test')
         
         
         
