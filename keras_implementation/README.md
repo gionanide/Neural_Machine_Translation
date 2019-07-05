@@ -25,7 +25,7 @@ context_vector, attention_weights = bahdanau_attention_layer([hidden_state, hidd
 
 ```python
 
-model = evaluate_model.compile_train_seq2seq(model, encoder_inputs_train, decoder_inputs_train, target_outputs_train, encoder_inputs_test, decoder_inputs_test, target_outputs_test)
+model = evaluate_model.compile_train_seq2seq(nmt_model, encoder_input_train, target_output_train, encoder_input_test, target_output_test, loss, epochs, learning_rate, batch_size, dropout_lstm_encoder, dropout_lstm_decoder, dropout_layer, decay)
 
 ```
 
@@ -33,6 +33,6 @@ model = evaluate_model.compile_train_seq2seq(model, encoder_inputs_train, decode
 
 ```python
 
-evaluate_model.model_speech_evaluation(trained_model, output_tokenizer, encoder_inputs_test, test, role='Test')
+evaluate_model.model_speech_evaluation(trained_model, output_tokenizer, encoder_input_train, train, role='Train')
 
 ```
