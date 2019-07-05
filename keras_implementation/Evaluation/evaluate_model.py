@@ -37,6 +37,7 @@ def compile_train(model, encoder_input_train, target_output_train, encoder_input
         
         
         #visualize the results
+        plt.figure(figsize=(40, 20))
         plt.plot(history.history['loss'])
         plt.plot(history.history['val_loss'])
         plt.title(title)
@@ -69,6 +70,7 @@ def compile_train_teacher_forcing(model, encoder_input_train, decoder_input_trai
         title = 'Model loss, properties:  epochs: '+str(epochs)+', lr: '+str(learning_rate)+', batch size:'+str(batch_size)+', decay:'+str(decay)+', dropout lstm encoder:'+str(dropout_lstm_encoder)+', dropout lstm decoder:'+str(dropout_lstm_decoder)+', dropout layer:'+str(dropout_layer)
         
         #visualize the results
+        plt.figure(figsize=(40, 20))
         plt.plot(history.history['loss'])
         plt.plot(history.history['val_loss'])
         plt.title(title)
