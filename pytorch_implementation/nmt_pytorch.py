@@ -36,7 +36,7 @@ device = torch.device('cuda:0')
 
 if __name__=='__main__':
 
-        path = '/media/data/gionanide/LSTMs/deu.txt'
+        path = 'path/deu.txt'
         
         text = preprocessing.readFile(path)
         
