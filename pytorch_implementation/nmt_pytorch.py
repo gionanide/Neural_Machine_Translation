@@ -3,7 +3,7 @@ from __future__ import print_function, division
 import encoder
 import sys
 #insert the path to shared file first and then import the scripts
-sys.path.insert(0, '/media/data/gionanide/LSTMs')
+sys.path.insert(0, 'PATH')
 import re
 import string
 from unicodedata import normalize
