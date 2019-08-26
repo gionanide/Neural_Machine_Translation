@@ -27,7 +27,7 @@ conda install -c conda-forge scikit-surprise==1.0.6
 
 conda install -c anaconda gensim==3.4.0
 
-conda install -c anaconda nltk==3.4.1
+conda install -c anaconda nltk==3.4.5
 
 conda install -c anaconda scikit-learn==0.21.2
 
