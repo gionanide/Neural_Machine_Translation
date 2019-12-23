@@ -35,7 +35,7 @@ conda install -c conda-forge matplotlib==3.1.0
 
 conda install bokeh==1.2.0
 
-conda install -c anaconda tensorflow-gpu==1.13.1
+conda install -c anaconda tensorflow-gpu==1.15.0
 
 conda install -c anaconda keras-gpu==2.2.4
 
